@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+const { uniqueId } = require("lodash");
+
 const app = express();
 const port = 3001;
-const { uniqueId } = require("lodash");
 
 // IN-MEMORY STORAGE (with one dummy student for testing, so I don't have to create a new student each time to test routes that depend on a student.)
 const students = {
@@ -11,6 +12,12 @@ const students = {
 
 // MIDDLEWARE
 app.use(cors());
+
+// EXPRESS 3
+// app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({extended: true}))
+
+// EXPRESS 4
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,7 +43,7 @@ app.get("/students/:studentId", (req, res) => {
   if (!students[studentId]) {
     res.status(404).send(`Student ${studentId} not found!`);
   } else {
-    res.status(200).send(students);
+    res.status(200).send(students[studentId]);
   }
 });
 
@@ -51,7 +58,7 @@ app.get("/grades/:studentId", (req, res) => {
 });
 
 // POST /grades
-app.post("/grades", (req, res) => {
+app.post("/grades/", (req, res) => {
   const { studentId, grade } = req.body;
   if (!students[studentId]) {
     res.status(404).send(`Student ${studentId} not found!`);
